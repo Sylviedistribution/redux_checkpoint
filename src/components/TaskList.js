@@ -1,58 +1,55 @@
 import { TaskStatus } from "../models/Status";
 import TaskItem from "./Task.item";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, createSelector } from "reduxjs/toolkit";
+import { tasksFilter } from "../redux/slice/taskSlice";
 import { Form } from "react-bootstrap";
 
-export default function TaskList({
-  handleToggle,
-  handleDelete,
-  handleEdit,
-  updateTaskStatus,
-}) {
-  const tasks = useSelector((state) => state.todos);
+const selectData = createSelector(
+  (state) => state.tasks.tasks,
+  (state) => state.tasks.filter,
+  (tasks, filter) => {
+    switch (filter) {
+      case "done":
+        return tasks.filter((task) => task.status === TaskStatus.DONE);
+      case "not done":
+        return tasks.filter((task) => task.status !== TaskStatus.DONE);
+      default:
+        return tasks;
+    }
+  }
+);
+export default function TaskList({ handleDelete }) {
+  const data = useSelector(selectData);
   const dispatch = useDispatch();
 
   return (
-    <div
-      className="tasks"
-      //Drag the task to Onhold section
-      onDragOver={(e) => {
-        e.preventDefault();
-      }}
-      //Drop the task to Onhold section
-      onDrop={(e) => {
-        const taskId = e.dataTransfer.getData("taskId");
-        updateTaskStatus(taskId, TaskStatus.ONHOLD);
-      }}
-    >
-      <Form.Check
-        inline
-        label="All"
-        type="radio"
-        onChange={() => dispatch(tasksFilter('all'))}
-      />
-      <Form.Check
-        inline
-        label="Done"
-        type="radio"
-        onChange={() => dispatch(tasksFilter('done'))}
-      />
-      <Form.Check
-        inline
-        label="Not Done"
-        type="radio"
-        onChange={() => dispatch(tasksFilter('not done'))}
-      />
+    <div className="tasks">
+      <p>
+        Filter Tasks{" "}
+        <Form.Check
+          inline
+          label="All"
+          type="radio"
+          onChange={() => dispatch(tasksFilter("all"))}
+        />
+        <Form.Check
+          inline
+          label="Done"
+          type="radio"
+          onChange={() => dispatch(tasksFilter("done"))}
+        />
+        <Form.Check
+          inline
+          label="Not Done"
+          type="radio"
+          onChange={() => dispatch(tasksFilter("not done"))}
+        />
+      </p>
+
       {
         //Apply filter to show only the done
-        tasks.map((task) => (
-          <TaskItem
-            key={task.id}
-            task={task}
-            handleToggle={handleToggle}
-            handleDelete={handleDelete}
-            handleEdit={handleEdit}
-          />
+        data.tasks.map((task) => (
+          <TaskItem key={task.id} task={task} handleDelete={handleDelete} />
         ))
       }
     </div>

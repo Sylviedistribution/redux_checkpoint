@@ -1,13 +1,11 @@
 import { Card, Form } from "react-bootstrap";
 import { Trash, Pencil } from "react-bootstrap-icons";
 import { TaskStatus } from "../models/Status";
+import { useDispatch } from "react-redux";
+import { toggleTask, editTask } from "../redux/slice/taskSlice";
 
-export default function TaskItem({
-  task,
-  handleToggle,
-  handleDelete,
-  handleEdit,
-}) {
+export default function TaskItem({ task, handleDelete }) {
+  const dispatch = useDispatch();
   return (
     <div
       className="task-item"
@@ -28,7 +26,9 @@ export default function TaskItem({
                 <strong>Due date:</strong> {task.dueDate}
               </Card.Text>
               <Card.Text className="status">
-                {task.status === TaskStatus.DONE ? "Status: Done" : "Status: Not Done"}
+                {task.status === TaskStatus.DONE
+                  ? "Status: Done"
+                  : "Status: Not Done"}
               </Card.Text>
             </div>
             <div className="task-action">
@@ -43,24 +43,19 @@ export default function TaskItem({
                     : "Reset"
                 }
                 type="radio"
-                onChange={() => handleToggle(task)}
+                onChange={() =>dispatch(toggleTask(task))}
               />
 
-              <Pencil className="pencil" onClick={() => handleEdit(task)} title="Edit"/>
+              <Pencil
+                className="pencil"
+                onClick={() => dispatch(editTask(task))}
+                title="Edit"
+              />
 
               <Trash
                 className="trash"
                 onClick={() => {
-                  // Decomment if you want to display a native confirmation box instead of WarningBox component
-                  // if (
-                  //   window.confirm(
-                  //     `Are you sure you want to delete the task: "${task.name}"?`
-                  //   )
-                  // ) {
-                  //   handleDelete(task.id);
-                  // }
-
-                  handleDelete(task.id);
+                  handleDelete(task);
                 }}
                 title="Delete"
               />

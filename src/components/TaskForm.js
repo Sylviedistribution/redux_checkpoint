@@ -2,11 +2,10 @@ import { Form, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import Task from "../models/Task";
 import { TaskStatus } from "../models/Status";
-import { useDispatch } from "react-redux";
-import { addTask } from "../redux/slice/taskSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { tasksFilter, addTask, editTask } from "../redux/slice/taskSlice";
 
-export default function TaskForm({ taskToEdit, confirmEdit }) {
-  const tasks = useSelector((state) => state.todos);
+export default function TaskForm({ taskToEdit }) {
   const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -17,18 +16,8 @@ export default function TaskForm({ taskToEdit, confirmEdit }) {
     description: false,
     dueDate: false,
   });
-  const isValid = Object.keys(errors).length === 0; // Verifier si le formulaire est valide
 
-  // Use useEffect to load task data into the form when taskToEdit changes
-  useEffect(() => {
-    if (taskToEdit && taskToEdit.id) {
-      setName(taskToEdit.name || "");
-      setDescription(taskToEdit.description || "");
-      setDueDate(taskToEdit.dueDate || "");
-    } else {
-      clean();
-    }
-  }, [taskToEdit]);
+  const isValid = Object.keys(errors).length === 0; // Verifier si le formulaire est valide
 
   useEffect(() => {
     setErrors(getErrors(name, description, dueDate));
@@ -66,12 +55,14 @@ export default function TaskForm({ taskToEdit, confirmEdit }) {
     if (!isValid) return;
 
     if (taskToEdit) {
-      confirmEdit({
-        ...taskToEdit, // Take a copy of the task to be edited using the spread operator, then modify its fields.
-        name,
-        description,
-        dueDate,
-      });
+      dispatch(
+        editTask({
+          ...taskToEdit, // Take a copy of the task to be edited using the spread operator, then modify its fields.
+          name,
+          description,
+          dueDate,
+        })
+      );
       return;
     }
     const newTask = new Task(
@@ -81,20 +72,18 @@ export default function TaskForm({ taskToEdit, confirmEdit }) {
       dueDate,
       TaskStatus.ONHOLD
     );
-    const updatedTasks = [...tasks, newTask];
-    setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+    dispatch(addTask(newTask));
     clean();
   }
 
   return (
-    <Form onSubmit={(e) => dispatch(addTask(e))}>
+    <Form onSubmit={(e) => handleSubmit(e)}>
       <Form.Group className="mb-3" controlId="formBasicName">
         <Form.Control
           type="text"
           placeholder="Enter task name"
           onChange={(e) => setName(e.target.value)}
-          onBlur={() => setTouched(touched =>({ ...touched, name: true }))}
+          onBlur={() => setTouched((touched) => ({ ...touched, name: true }))}
           value={name}
         />
         {touched.name && errors.name && (
@@ -107,7 +96,9 @@ export default function TaskForm({ taskToEdit, confirmEdit }) {
           type="text"
           placeholder="Enter task description"
           onChange={(e) => setDescription(e.target.value)}
-          onBlur={() => setTouched(touched =>({ ...touched, description: true }))}
+          onBlur={() =>
+            setTouched((touched) => ({ ...touched, description: true }))
+          }
           value={description}
         />
         {touched.description && errors.description && (
@@ -120,7 +111,9 @@ export default function TaskForm({ taskToEdit, confirmEdit }) {
         <Form.Control
           type="date"
           onChange={(e) => setDueDate(e.target.value)}
-          onBlur={() => setTouched(touched =>({ ...touched, dueDate: true }))}
+          onBlur={() =>
+            setTouched((touched) => ({ ...touched, dueDate: true }))
+          }
           value={dueDate}
         />
         {touched.dueDate && errors.dueDate && (
@@ -129,8 +122,8 @@ export default function TaskForm({ taskToEdit, confirmEdit }) {
       </Form.Group>
 
       <div className="d-flex justify-content-end">
-        <Button variant="primary" type="submit" disabled={!isValid} onClick ={()=> dispatch(addTask(task))}>
-          {taskToEdit && taskToEdit.id ? "Update Task" : "Add Task"} 
+        <Button variant="primary" type="submit" disabled={!isValid}>
+          {taskToEdit && taskToEdit.id ? "Update Task" : "Add Task"}
         </Button>
       </div>
     </Form>
