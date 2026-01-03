@@ -96,6 +96,7 @@ Returns tasks based on the currently selected filter.
 ### Components Overview
 
 **TaskForm**
+
 -Controlled form using React useState and useEffect.
 
 -Validates inputs before dispatching addTask or editTask.
@@ -103,6 +104,7 @@ Returns tasks based on the currently selected filter.
 -Handles preloading of data when editing a task.
 
 **TaskList**
+
 -Displays tasks using TaskItem.
 
 -Includes radio buttons to filter tasks: All, Done, Not Done.
@@ -110,11 +112,13 @@ Returns tasks based on the currently selected filter.
 -Uses selectFilteredTasks selector for filtered tasks.
 
 **TaskItem**
+
 -Displays individual task details.
 
 -Includes edit and delete actions.
 
 **WarningBox**
+
 -Confirmation modal displayed before deleting a task.
 
 ### How to Run
