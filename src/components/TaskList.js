@@ -6,7 +6,7 @@ import { tasksFilter } from "../redux/slice/taskSlice";
 import { Form } from "react-bootstrap";
 
 const selectFilteredTasks = createSelector(
-  (state) => state.tasks.tasks,
+  (state) => state.tasks.tasks || [],
   (state) => state.tasks.filter,
   (tasks, filter) => {
     switch (filter) {
@@ -23,6 +23,8 @@ const selectFilteredTasks = createSelector(
 );
 export default function TaskList({ handleDelete }) {
   const data = useSelector(selectFilteredTasks);
+  const filter = useSelector((state) => state.tasks.filter);
+
   const dispatch = useDispatch();
 
   return (
@@ -34,19 +36,25 @@ export default function TaskList({ handleDelete }) {
             inline
             label="All"
             type="radio"
+            name="taskFilter"
+            checked={filter === "all"}
             onChange={() => dispatch(tasksFilter("all"))}
           />
           <Form.Check
             inline
             label="Done"
             type="radio"
+            name="taskFilter"
+            checked={filter === "done"}
             onChange={() => dispatch(tasksFilter("done"))}
           />
           <Form.Check
             inline
             label="Not Done"
             type="radio"
-            onChange={() => dispatch(tasksFilter("not done"))}
+            name="taskFilter"
+            checked={filter === "not_done"}
+            onChange={() => dispatch(tasksFilter("not_done"))}
           />
         </span>
       </div>
