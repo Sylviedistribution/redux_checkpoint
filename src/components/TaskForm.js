@@ -1,12 +1,12 @@
 import { Form, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import Task from "../models/Task";
 import { TaskStatus } from "../models/Status";
-import { useDispatch, useSelector } from "react-redux";
-import { tasksFilter, addTask, editTask } from "../redux/slice/taskSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { addTask, editTask } from "../redux/slice/taskSlice";
 
-export default function TaskForm({ taskToEdit }) {
+export default function TaskForm() {
   const dispatch = useDispatch();
+  const taskToEdit = useSelector((state) => state.tasks.taskToEdit);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -19,6 +19,17 @@ export default function TaskForm({ taskToEdit }) {
 
   const isValid = Object.keys(errors).length === 0; // Verifier si le formulaire est valide
 
+  // Use useEffect to load task data into the form when taskToEdit changes
+  useEffect(() => {
+    if (taskToEdit && taskToEdit.id) {
+      setName(taskToEdit.name || "");
+      setDescription(taskToEdit.description || "");
+      setDueDate(taskToEdit.dueDate || "");
+    } else {
+      clean();
+    }
+  }, [taskToEdit]);
+  
   useEffect(() => {
     setErrors(getErrors(name, description, dueDate));
   }, [name, description, dueDate]);
@@ -65,13 +76,13 @@ export default function TaskForm({ taskToEdit }) {
       );
       return;
     }
-    const newTask = new Task(
-      crypto.randomUUID(),
+    const newTask = {
+      id: crypto.randomUUID(),
       name,
       description,
       dueDate,
-      TaskStatus.ONHOLD
-    );
+      status: TaskStatus.ONHOLD
+    };
     dispatch(addTask(newTask));
     clean();
   }

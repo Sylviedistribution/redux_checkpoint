@@ -5,32 +5,27 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WarningBox from "./utils/WarningBox";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { deleteTask } from "./redux/slice/taskSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteTask, saveTaskToDelete } from "./redux/slice/taskSlice";
 
 function App() {
 
   const dispatch = useDispatch();
+  const taskToDelete = useSelector((state) => state.tasks.taskToDelete);
+
   // State for warning box visibility and task to delete
   const [showWarning, setShowWarning] = useState(false);
-
-  // State to hold the task being edited
-  const [taskToEdit, setTaskToEdit] = useState(null);
  
-  // Delete task with confirmation
-  const [taskToDelete, setTaskToDelete] = useState(null);
-
   // Show warning box before deletion
   function handleDelete(task) {
-    setTaskToDelete(task);
+    dispatch(saveTaskToDelete(task));
     setShowWarning(true);
   }
 
   
   function confirmDelete() {
     // Dispatch delete action here
-    dispatch(deleteTask(taskToDelete));
-    setTaskToDelete(null);
+    dispatch(deleteTask(taskToDelete.id));
     setShowWarning(false);
   }
 
@@ -45,8 +40,8 @@ function App() {
       <h1 className="text-center">My To Do App</h1>
 
       <section className="container-tasks">
-        <div>
-          <TaskForm taskToEdit={taskToEdit} />
+        <div className="taskform">
+          <TaskForm />
         </div>
 
         <div className="tasks-onhold">
