@@ -75,6 +75,7 @@ UI state (taskToEdit, taskToDelete, filter) is not persisted.
 
 Selector
 
+```js
 const selectFilteredTasks = createSelector(
   (state) => state.tasks.tasks || [],
   (state) => state.tasks.filter,
@@ -89,6 +90,7 @@ const selectFilteredTasks = createSelector(
     }
   }
 );
+```
 Returns tasks based on the currently selected filter.
 
 Components Overview
