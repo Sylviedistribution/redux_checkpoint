@@ -50,7 +50,7 @@ src/
   taskToDelete: null, // Task pending deletion
   filter: "all"     // Current filter (all, done, not_done)
 }
-
+```
 Reducers:
 
 addTask → Adds a new task
