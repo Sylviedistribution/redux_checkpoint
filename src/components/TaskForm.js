@@ -29,7 +29,7 @@ export default function TaskForm() {
       clean();
     }
   }, [taskToEdit]);
-  
+
   useEffect(() => {
     setErrors(getErrors(name, description, dueDate));
   }, [name, description, dueDate]);
