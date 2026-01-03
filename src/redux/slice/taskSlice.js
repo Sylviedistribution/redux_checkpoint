@@ -1,14 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { TaskStatus } from "../../models/Status";
 
+export const initialState = {
+  tasks: [],
+  taskToEdit: null,
+  taskToDelete: null,
+  filter: "all",
+};
+
 export const taskSlice = createSlice({
   name: "tasks",
-  initialState: {
-    tasks: [],
-    taskToEdit: null,
-    taskToDelete: null,
-    filter: 'all'
-  },
+  
+  initialState,
 
   reducers: {
     addTask: (state, action) => {
@@ -57,4 +60,5 @@ export const taskSlice = createSlice({
 });
 
 export const { addTask, toggleTask, editTask, saveTaskToEdit, deleteTask, saveTaskToDelete, tasksFilter } = taskSlice.actions; // Create auto-generated action creators e.g dispatch(addTask(payload)), dispatch(editTask(payload)); dispatch(setFilter(payload));
+
 export default taskSlice.reducer;
