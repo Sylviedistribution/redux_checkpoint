@@ -20,7 +20,7 @@ A simple ToDo application built with **React** and **Redux Toolkit** that allows
 ---
 
 ## Project Structure
-
+```
 src/
 ├─ components/
 │ ├─ Header.js # App header
@@ -37,7 +37,7 @@ src/
 │ └─ Status.js # Enum for task status (ONHOLD, DONE, NOT_DONE)
 └─ App.js # Main component assembling the app
 
-
+```
 ## State Management
 
 ### Redux Slice (`taskSlice`)
@@ -51,7 +51,7 @@ src/
   filter: "all"     // Current filter (all, done, not_done)
 }
 ```
-Reducers:
+- **Reducers**:
 
 addTask → Adds a new task
 
@@ -67,13 +67,13 @@ tasksFilter → Updates filter state
 
 toggleTask → Toggle task completion status
 
-Persistence:
+### Persistence:
 
 Only the tasks array is saved to localStorage via a store.subscribe function.
 
 UI state (taskToEdit, taskToDelete, filter) is not persisted.
 
-Selector
+### Selector
 
 ```js
 const selectFilteredTasks = createSelector(
@@ -93,31 +93,31 @@ const selectFilteredTasks = createSelector(
 ```
 Returns tasks based on the currently selected filter.
 
-Components Overview
+### Components Overview
 
-TaskForm
+**TaskForm**
 -Controlled form using React useState and useEffect.
 
 -Validates inputs before dispatching addTask or editTask.
 
 -Handles preloading of data when editing a task.
 
-TaskList
+**TaskList**
 -Displays tasks using TaskItem.
 
 -Includes radio buttons to filter tasks: All, Done, Not Done.
 
 -Uses selectFilteredTasks selector for filtered tasks.
 
-TaskItem
+**TaskItem**
 -Displays individual task details.
 
 -Includes edit and delete actions.
 
-WarningBox
+**WarningBox**
 -Confirmation modal displayed before deleting a task.
 
-How to Run
+### How to Run
 Clone the repo:
 
 git clone https://github.com/Sylviedistribution/redux_checkpoint
@@ -128,7 +128,7 @@ npm install
 Start the app:
 npm start
 
-Notes
+### Notes
 Task IDs are generated using crypto.randomUUID() for uniqueness.
 
 Task status is controlled via TaskStatus enum.
