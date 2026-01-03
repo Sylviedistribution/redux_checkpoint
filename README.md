@@ -1,70 +1,141 @@
-# Getting Started with Create React App
+# My ToDo App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A simple ToDo application built with **React** and **Redux Toolkit** that allows users to manage tasks with persistent storage in the browser using **localStorage**.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- **Add a new task** with name, description, and due date
+- **Edit existing tasks**
+- **Delete tasks** with confirmation prompt
+- **Filter tasks** by status:
+  - All
+  - Done
+  - Not done
+- **Persistent storage**: tasks are saved to localStorage, so they remain after page reload
+- **Form validation**: ensures task name, description, and due date are valid
+- **UI feedback**: error messages for invalid fields and a warning box for deletion confirmation
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure
 
-### `npm test`
+src/
+├─ components/
+│ ├─ Header.js # App header
+│ ├─ Footer.js # App footer
+│ ├─ TaskForm.js # Form to add or edit a task
+│ ├─ TaskList.js # List of tasks with filter
+│ └─ TaskItem.js # Single task item
+├─ redux/
+│ └─ slice/
+│ └─ taskSlice.js # Redux slice managing tasks
+├─ utils/
+│ └─ WarningBox.js # Component for delete confirmation
+├─ models/
+│ └─ Status.js # Enum for task status (ONHOLD, DONE, NOT_DONE)
+└─ App.js # Main component assembling the app
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+## State Management
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Redux Slice (`taskSlice`)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **Initial State**:
+```js
+{
+  tasks: [],        // Array of task objects
+  taskToEdit: null, // Task currently being edited
+  taskToDelete: null, // Task pending deletion
+  filter: "all"     // Current filter (all, done, not_done)
+}
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Reducers:
 
-### `npm run eject`
+addTask → Adds a new task
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+editTask → Updates an existing task
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+deleteTask → Removes a task
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+saveTaskToEdit → Stores task to edit
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+saveTaskToDelete → Stores task to delete
 
-## Learn More
+tasksFilter → Updates filter state
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+toggleTask → Toggle task completion status
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Persistence:
 
-### Code Splitting
+Only the tasks array is saved to localStorage via a store.subscribe function.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+UI state (taskToEdit, taskToDelete, filter) is not persisted.
 
-### Analyzing the Bundle Size
+Selector
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+const selectFilteredTasks = createSelector(
+  (state) => state.tasks.tasks || [],
+  (state) => state.tasks.filter,
+  (tasks, filter) => {
+    switch (filter) {
+      case "done":
+        return tasks.filter((task) => task.status === TaskStatus.DONE);
+      case "not_done":
+        return tasks.filter((task) => task.status === TaskStatus.NOT_DONE);
+      default:
+        return tasks;
+    }
+  }
+);
+Returns tasks based on the currently selected filter.
 
-### Making a Progressive Web App
+Components Overview
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+TaskForm
+-Controlled form using React useState and useEffect.
 
-### Advanced Configuration
+-Validates inputs before dispatching addTask or editTask.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+-Handles preloading of data when editing a task.
 
-### Deployment
+TaskList
+-Displays tasks using TaskItem.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+-Includes radio buttons to filter tasks: All, Done, Not Done.
 
-### `npm run build` fails to minify
+-Uses selectFilteredTasks selector for filtered tasks.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+TaskItem
+-Displays individual task details.
+
+-Includes edit and delete actions.
+
+WarningBox
+-Confirmation modal displayed before deleting a task.
+
+How to Run
+Clone the repo:
+
+git clone https://github.com/Sylviedistribution/redux_checkpoint
+
+Install dependencies:
+npm install
+
+Start the app:
+npm start
+
+Notes
+Task IDs are generated using crypto.randomUUID() for uniqueness.
+
+Task status is controlled via TaskStatus enum.
+
+Deletion confirmation ensures tasks are not removed accidentally.
+
+Form validation prevents invalid tasks from being added or edited.
+
+localStorage ensures tasks persist across page reloads.
+
+Author
+Sylvestre IBOMBO GAKOSSO
